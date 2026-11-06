@@ -57,10 +57,10 @@ function Login({ onLogin }) {
       <div className="login-story-content">
         <div className="eyebrow"><span className="tiny-line" /> SECURITY OPERATIONS</div>
         <h1>从事件记录，<br />走向闭环处置<span>。</span></h1>
-        <p>让每一次研判有据可查，<br />让安全运营过程清晰可循。</p>
+        <p>记录日常安全事件、研判与处置过程。</p>
         <div className="login-funnel" aria-hidden="true">
           {STAGES.map((stage, i) => <div className="login-funnel-row" key={stage.key} style={{ '--i': i }}><span>{String(i + 1).padStart(2, '0')}</span><div style={{ width: `${100 - i * 15}%` }} /><span>{stage.label}</span></div>)}
-          <span className="login-funnel-caption">由全量日志，逐层聚焦安全红线</span>
+          <span className="login-funnel-caption">安全风险 · 安全事件 · 安全违规 · 安全红线</span>
         </div>
       </div>
       <div className="login-story-bottom"><span>TRACE / 数据安全运营工作空间</span><span>01 — 05</span></div>
@@ -71,7 +71,6 @@ function Login({ onLogin }) {
         <div className="login-lock"><LockKeyhole size={23} strokeWidth={1.6} /></div>
         <div className="eyebrow muted">YOUR SECURITY WORKSPACE</div>
         <h2>登录工作空间</h2>
-        <p className="login-description">专注事件，聚焦风险。欢迎回来。</p>
         <form onSubmit={submit}>
           <label className="field-label" htmlFor="username">用户名</label>
           <input id="username" name="username" autoComplete="username" placeholder="请输入用户名" required maxLength={100} disabled={busy} autoFocus />
@@ -82,7 +81,6 @@ function Login({ onLogin }) {
         </form>
         <div className="login-security"><ShieldCheck size={14} /><span>身份验证后进入安全运营平台</span></div>
       </div>
-      <div className="login-footnote">轻量、清晰、有迹可循。</div>
     </section>
   </div>;
 }
@@ -130,13 +128,12 @@ function App() {
     {mobileOpen && <div className="sidebar-scrim" onClick={() => setMobileOpen(false)} />}
     <aside className={`sidebar ${mobileOpen ? 'is-open' : ''}`}>
       <a href="#overview" className="brand-link" aria-label="Trace 首页" onClick={() => navigate('overview')}><Brand /></a>
-      <div className="workspace-label"><span className="workspace-monogram"><ShieldCheck size={17} /></span><div><strong>安全运营工作空间</strong><span>运营记录 · 风险分析</span></div><LockKeyhole size={12} /></div>
+      <div className="workspace-label"><span className="workspace-monogram"><ShieldCheck size={17} /></span><div><strong>安全运营工作空间</strong></div><LockKeyhole size={12} /></div>
       <div className="nav-label">工作台 <span>WORKSPACE</span></div>
       <nav aria-label="主导航">{Object.entries(PAGE_NAMES).map(([key, label]) => {
         const Icon = PAGE_ICONS[key];
         return <a href={`#${key}`} key={key} className={`nav-item ${page === key ? 'active' : ''}`} aria-current={page === key ? 'page' : undefined} onClick={() => navigate(key)}><Icon size={18} strokeWidth={1.7} /><span>{label}</span>{page === key && <span className="nav-active-dot" />}</a>;
       })}</nav>
-      <div className="sidebar-note"><div className="sidebar-note-icon"><Layers3 size={20} strokeWidth={1.5} /></div><strong>记录过程，沉淀判断。</strong><p>以运营记录为依据，<br />让风险趋势清晰可见。</p><button onClick={() => navigate('model')}>查看运营配置 <ArrowUpRight size={13} /></button></div>
       <div className="sidebar-bottom"><div className="local-status"><span className="status-dot" /> 安全运营平台 <span className="version">{APP_VERSION_LABEL}</span></div><div className="user-row"><div className="avatar">{user.username[0].toUpperCase()}</div><div className="user-name"><strong>{user.username}</strong><span>平台管理员</span></div><button className="icon-button" title="退出登录" aria-label="退出登录" onClick={logout}><LogOut size={17} /></button></div></div>
     </aside>
     <div className="main-shell">
@@ -146,12 +143,12 @@ function App() {
         {page === 'events' && <Events revision={revision} onCreate={() => setFormOpen(true)} onBatchCreate={() => setBatchOpen(true)} onEvent={(event, mode = 'detail') => setSelectedEvent({ event, mode })} onChange={() => setRevision(value => value + 1)} notify={notify} />}
         {page === 'campaigns' && <Campaigns ui={campaignUi} revision={revision} onChange={() => setRevision(value => value + 1)} notify={notify} focusId={campaignFocus} onFocus={navigateCampaign} createSource={campaignSource} onSourceHandled={() => setCampaignSource(null)} onEvent={event => setSelectedEvent({ event, mode: 'detail' })} />}
         {page === 'model' && <Model revision={revision} onChange={() => setRevision(value => value + 1)} notify={notify} />}
-      <footer className="page-footer"><span><span className="footer-dot" /> TRACE · 安全运营事件平台</span><span>每一次研判，都有据可循。</span></footer>
+      <footer className="page-footer"><span><span className="footer-dot" /> TRACE · 安全运营事件平台</span></footer>
       </main>
     </div>
-    {formOpen && <EventFormModal onClose={() => setFormOpen(false)} onSuccess={() => { setRevision(value => value + 1); setFormOpen(false); notify('事件已保存，风险漏斗已更新。'); }} />}
-    {batchOpen && <BatchEventModal onClose={() => setBatchOpen(false)} onSuccess={count => { setRevision(value => value + 1); setBatchOpen(false); notify(`已批量创建 ${count} 个事件工单，风险漏斗已更新。`); }} />}
-    {selectedEvent && <EventModal key={`${selectedEvent.event.id}-${selectedEvent.mode}`} event={selectedEvent.event} initialEditing={selectedEvent.mode === 'edit'} onCampaign={campaign => { setSelectedEvent(null); navigateCampaign(campaign.id); }} onImprovement={event => { setSelectedEvent(null); setCampaignFocus(null); setCampaignSource(event); navigate('campaigns'); }} onClose={() => setSelectedEvent(null)} onUpdated={() => { setRevision(value => value + 1); setSelectedEvent(null); notify('事件已更新，风险漏斗已重新计算。'); }} />}
+    {formOpen && <EventFormModal onClose={() => setFormOpen(false)} onSuccess={() => { setRevision(value => value + 1); setFormOpen(false); notify('事件已保存。'); }} />}
+    {batchOpen && <BatchEventModal onClose={() => setBatchOpen(false)} onSuccess={count => { setRevision(value => value + 1); setBatchOpen(false); notify(`已批量创建 ${count} 个事件。`); }} />}
+    {selectedEvent && <EventModal key={`${selectedEvent.event.id}-${selectedEvent.mode}`} event={selectedEvent.event} initialEditing={selectedEvent.mode === 'edit'} onCampaign={campaign => { setSelectedEvent(null); navigateCampaign(campaign.id); }} onImprovement={event => { setSelectedEvent(null); setCampaignFocus(null); setCampaignSource(event); navigate('campaigns'); }} onClose={() => setSelectedEvent(null)} onUpdated={() => { setRevision(value => value + 1); setSelectedEvent(null); notify('事件已更新。'); }} />}
     {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
   </div>;
 }
@@ -170,7 +167,7 @@ function useData(path, revision) {
 }
 
 function PageHeading({ eyebrow, title, description, children }) {
-  return <div className="page-heading"><div><div className="eyebrow muted">{eyebrow}</div><h1>{title}<span className="heading-dot">.</span></h1><p>{description}</p></div><div className="page-actions">{children}</div></div>;
+  return <div className="page-heading"><div><div className="eyebrow muted">{eyebrow}</div><h1>{title}<span className="heading-dot">.</span></h1>{description && <p>{description}</p>}</div><div className="page-actions">{children}</div></div>;
 }
 
 function PeriodSelect({ value, onChange }) {
@@ -182,21 +179,20 @@ function Overview({ revision, navigate, notify }) {
   const { data, error, loading, retry } = useData(`/overview?period=${period}`, revision);
   const values = data?.values || {};
   const count = key => values[`${key}_${period}`] || 0;
-  const total = count('logs');
   const redLines = count('red_lines');
   const cards = [
-    { key: 'logs', label: '安全日志', icon: Database, note: '具体事件 + 专项', type: 'neutral' },
-    { key: 'risks', label: '安全风险', icon: ShieldAlert, note: '具体事件 + 专项（含事件层级）', type: 'sage' },
-    { key: 'incidents', label: '安全事件', icon: FileCheck2, note: '具体事件 + 事件专项', type: 'green' },
-    { key: 'red_lines', label: '安全红线', icon: Shield, note: '需要重点关注的红线事件', type: 'clay' },
+    { key: 'logs', label: '安全日志', icon: Database, type: 'neutral' },
+    { key: 'risks', label: '安全风险', icon: ShieldAlert, type: 'sage' },
+    { key: 'incidents', label: '安全事件', icon: FileCheck2, type: 'green' },
+    { key: 'red_lines', label: '安全红线', icon: Shield, type: 'clay' },
   ];
   return <>
-    <PageHeading eyebrow="SECURITY OPERATIONS" title="风险概览" description="汇总具体事件与安全专项，跟踪研判结果与处置工作量。" />
-    <div className="overview-toolbar"><div className="section-eyebrow"><span className="status-dot" /> 运营数据总览 <span className="toolbar-caption">以发现时间统计</span></div><PeriodSelect value={period} onChange={setPeriod} /></div>
+    <PageHeading eyebrow="SECURITY OPERATIONS" title="风险概览" />
+    <div className="overview-toolbar"><div className="section-eyebrow"><span className="status-dot" /> 运营数据总览</div><PeriodSelect value={period} onChange={setPeriod} /></div>
     {error ? <ErrorBlock error={error} retry={retry} /> : <>
-      <div className="stats-grid">{cards.map(card => <article className={`stat-card stat-${card.type}`} key={card.key}><div className="stat-card-top"><span>{card.label}</span><div className="stat-icon"><card.icon size={17} strokeWidth={1.6} /></div></div><div className="stat-value">{loading ? <span className="skeleton-number" /> : n(count(card.key))}<span>条</span></div><div className="stat-note"><span className="stat-note-dot" />{card.note}</div></article>)}</div>
+      <div className="stats-grid">{cards.map(card => <article className={`stat-card stat-${card.type}`} key={card.key}><div className="stat-card-top"><span>{card.label}</span><div className="stat-icon"><card.icon size={17} strokeWidth={1.6} /></div></div><div className="stat-value">{loading ? <span className="skeleton-number" /> : n(count(card.key))}<span>条</span></div></article>)}</div>
       <div className="overview-primary-grid">
-        <section className="panel funnel-panel"><div className="panel-heading"><div><div className="panel-title"><Filter size={18} /><h2>风险研判分层</h2><span className="subtle-tag">默认周期</span></div><p>日志、风险、事件均包含专项贡献</p></div><button className="text-button" onClick={() => navigate('model')}>运营配置 <ArrowUpRight size={14} /></button></div>
+        <section className="panel funnel-panel"><div className="panel-heading"><div><div className="panel-title"><Filter size={18} /><h2>风险研判分层</h2></div></div><button className="text-button" onClick={() => navigate('model')}>运营配置 <ArrowUpRight size={14} /></button></div>
           {!data?.enabled && !loading ? <div className="disabled-funnel"><BellOff size={25} /><strong>默认周期漏斗已关闭</strong><p>事件数据继续保留，可在运营配置中重新开启。</p><Button variant="secondary" onClick={() => navigate('model')}>前往运营配置</Button></div> : <div className="funnel-content">
             <div className="funnel-table-head"><span>研判层级</span><span>风险来源占比</span><span>记录数</span><span>占风险比</span></div>
             {STAGES.filter(stage => stage.key !== 'logs').map((stage, index) => {
@@ -209,13 +205,13 @@ function Overview({ revision, navigate, notify }) {
                 <strong className="funnel-count">{loading ? '—' : n(value)}</strong><span className="funnel-rate">{index === 0 ? '—' : rate === null ? '—' : `${rate}%`}</span>
               </div>;
             })}
-            <div className="campaign-source-note">安全日志：具体事件 {n(data?.event_values?.[`logs_${period}`]||0)} + 专项 {n(data?.campaign_values?.logs?.[period]||0)}<br />安全风险：具体事件 {n(data?.event_values?.[`risks_${period}`]||0)} + 专项 {n(data?.campaign_values?.risks?.[period]||0)}<br />安全事件：具体事件 {n(data?.event_values?.[`incidents_${period}`]||0)} + 专项 {n(data?.campaign_values?.incidents?.[period]||0)}</div><div className="funnel-bottom"><div><span className="mini-icon"><ArrowDown size={14} /></span><span>红线占全部风险 <strong>{count('risks') ? (redLines / count('risks') * 100).toFixed(1) : '0.0'}%</strong></span></div><span className="funnel-footnote">违规、红线仅来自具体事件</span></div>
+            <div className="campaign-source-note">安全日志：具体事件 {n(data?.event_values?.[`logs_${period}`]||0)} + 专项 {n(data?.campaign_values?.logs?.[period]||0)}<br />安全风险：具体事件 {n(data?.event_values?.[`risks_${period}`]||0)} + 专项 {n(data?.campaign_values?.risks?.[period]||0)}<br />安全事件：具体事件 {n(data?.event_values?.[`incidents_${period}`]||0)} + 专项 {n(data?.campaign_values?.incidents?.[period]||0)}</div><div className="funnel-bottom"><div><span className="mini-icon"><ArrowDown size={14} /></span><span>红线占全部风险 <strong>{count('risks') ? (redLines / count('risks') * 100).toFixed(1) : '0.0'}%</strong></span></div></div>
           </div>}
         </section>
-        <section className="panel severity-panel"><div className="panel-heading"><div><div className="panel-title"><ShieldAlert size={18} /><h2>红线风险分布</h2></div><p>安全红线按事件严重程度分级</p></div></div><div className="severity-list">{SEVERITY_NAMES.map((name, index) => {
+        <section className="panel severity-panel"><div className="panel-heading"><div><div className="panel-title"><ShieldAlert size={18} /><h2>红线风险分布</h2></div></div></div><div className="severity-list">{SEVERITY_NAMES.map((name, index) => {
           const countValue = count(`redline_p${index}`);
           return <div className="severity-item" key={name}><div className="severity-main"><span className={`severity-badge p${index}`}>P{index}</span><span>{name}事件</span><strong>{loading ? '—' : n(countValue)}<span>条</span></strong></div><div className="severity-track"><span style={{ width: `${redLines ? countValue / redLines * 100 : 0}%`, background: METRICS[index + 5].color }} /></div></div>;
-        })}</div><div className="severity-footer"><span className="status-dot neutral-dot" />P0–P4 合计等于安全红线总量</div></section>
+        })}</div></section>
       </div>
       <div className="data-caption"><Clock3 size={12} /><span>{data?.as_of ? `统计截至 ${formatDate(data.as_of)}（上海时间）` : '正在计算统计数据'}</span></div>
     </>}
@@ -309,7 +305,7 @@ function Events({ revision, onCreate, onBatchCreate, onEvent, onChange, notify }
     return deleteEvents([event.id], `确定删除事件“${event.title || event.event_id}”（${event.event_id}）吗？删除后将从风险漏斗统计中移除。`);
   }
   return <>
-    <PageHeading eyebrow="EVENT RECORDS" title="事件记录" description="汇集运营记录，保留每一条风险的来龙去脉。"><div className="page-action-group"><Button variant="secondary" icon={ListPlus} onClick={onBatchCreate}>批量建单</Button><Button icon={Plus} onClick={onCreate}>上报事件</Button></div></PageHeading>
+    <PageHeading eyebrow="EVENT RECORDS" title="事件记录"><div className="page-action-group"><Button variant="secondary" icon={ListPlus} onClick={onBatchCreate}>批量建单</Button><Button icon={Plus} onClick={onCreate}>上报事件</Button></div></PageHeading>
     <section className="panel events-panel">
       <div className="events-toolbar">
         <div className="search-field"><Search size={17} /><input value={search} onChange={event => setSearch(event.target.value)} placeholder="搜索事件编号或填报内容" aria-label="搜索事件" />{search && <button className="icon-button" aria-label="清空搜索" onClick={() => setSearch('')}><X size={14} /></button>}</div>
@@ -321,10 +317,9 @@ function Events({ revision, onCreate, onBatchCreate, onEvent, onChange, notify }
         {selectedIds.size > 0 && <Button variant="danger" icon={Trash2} disabled={deleting} onClick={deleteSelected}>删除已选（{selectedIds.size}）</Button>}
       </div>
       <div className="events-filter-row"><label>发生时间从 <input type="date" max={occurredTo || undefined} value={occurredFrom} onChange={event => { setOccurredFrom(event.target.value); setPage(1); }} /></label><label>到 <input type="date" min={occurredFrom || undefined} value={occurredTo} onChange={event => { setOccurredTo(event.target.value); setPage(1); }} /></label><label>每页 <input className="page-size-input" type="number" min="1" max="100" step="1" aria-label="每页展示条数" value={pageSizeInput} onChange={event => setPageSizeInput(event.target.value)} onBlur={applyPageSize} onKeyDown={event => { if (event.key === 'Enter') event.currentTarget.blur(); }} /> 条 <span>（最多 100）</span></label><button className="text-button" onClick={() => { setSearch(''); setDebounced(''); setStage(''); setEventType(''); setSecurityOwner(''); setOccurredFrom(''); setOccurredTo(''); setSort('occurred_desc'); setPageSize(20); setPageSizeInput('20'); setPage(1); }}>清空筛选</button></div>
-      {error ? <ErrorBlock error={error} retry={retry} /> : loading ? <Spinner text="正在读取事件记录…" /> : !data?.events.length ? <EmptyState title={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? '没有符合条件的事件' : '让事件记录，从这里开始'} description={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? '尝试更换筛选条件。' : '通过表单逐条填写事件，保存后会在这里汇总。'} action={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? <Button variant="secondary" onClick={() => { setSearch(''); setDebounced(''); setStage(''); setEventType(''); setSecurityOwner(''); setOccurredFrom(''); setOccurredTo(''); setPage(1); }}>清空筛选</Button> : <div className="page-action-group"><Button variant="secondary" icon={ListPlus} onClick={onBatchCreate}>批量建单</Button><Button icon={Plus} onClick={onCreate}>上报事件</Button></div>} /> : <div className="events-table-wrap"><table className="events-table"><thead><tr><th className="selection-cell"><input type="checkbox" aria-label="选择当前页全部事件" checked={allCurrentSelected} onChange={toggleCurrentPage} /></th><th>事件标题 / 编号</th><th>事件类型</th><th>发现时间</th><th>安全负责人</th><th>事件负责人</th><th>研判层级</th><th>红线确认书</th><th>记录时间</th><th>操作</th></tr></thead><tbody>{data.events.map(event => <tr key={event.id}><td className="selection-cell"><input type="checkbox" aria-label={`选择事件 ${event.event_id}`} checked={selectedIds.has(event.id)} onChange={() => toggleSelected(event.id)} /></td><td><button className="event-title-button" onClick={() => onEvent(event)}>{event.title || event.event_id}</button><span className="table-secondary mono">{event.event_id}</span></td><td><span className="event-type-tag">{eventTypeName(event.event_type)}</span></td><td className="date-cell">{formatDate(event.occurred_at)}</td><EventOwnersCell value={event.security_owners} /><EventOwnersCell value={event.incident_owners} /><td><StageBadge event={event} /></td><td>{event.stage === 'red_lines' ? event.redline_confirmation_asset_id ? <span className="confirmation-status has"><FileImage size={13} />已上传</span> : <span className="confirmation-status">未上传</span> : <span className="table-secondary">不适用</span>}</td><td className="date-cell">{formatDate(event.created_at)}</td><td><div className="event-row-actions"><button className="text-button" onClick={() => onEvent(event)}>详情</button><button className="text-button" onClick={() => onEvent(event, 'edit')}>编辑</button><button className="text-button delete-event-button" disabled={deleting} onClick={() => deleteEvent(event)}>删除</button></div></td></tr>)}</tbody></table></div>}
+      {error ? <ErrorBlock error={error} retry={retry} /> : loading ? <Spinner text="正在读取事件记录…" /> : !data?.events.length ? <EmptyState title={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? '没有符合条件的事件' : '暂无事件记录'} description={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? '尝试更换筛选条件。' : '通过表单逐条填写事件，保存后会在这里汇总。'} action={search || stage || eventType || securityOwner || occurredFrom || occurredTo ? <Button variant="secondary" onClick={() => { setSearch(''); setDebounced(''); setStage(''); setEventType(''); setSecurityOwner(''); setOccurredFrom(''); setOccurredTo(''); setPage(1); }}>清空筛选</Button> : <div className="page-action-group"><Button variant="secondary" icon={ListPlus} onClick={onBatchCreate}>批量建单</Button><Button icon={Plus} onClick={onCreate}>上报事件</Button></div>} /> : <div className="events-table-wrap"><table className="events-table"><thead><tr><th className="selection-cell"><input type="checkbox" aria-label="选择当前页全部事件" checked={allCurrentSelected} onChange={toggleCurrentPage} /></th><th>事件标题 / 编号</th><th>事件类型</th><th>发现时间</th><th>安全负责人</th><th>事件负责人</th><th>研判层级</th><th>红线确认书</th><th>记录时间</th><th>操作</th></tr></thead><tbody>{data.events.map(event => <tr key={event.id}><td className="selection-cell"><input type="checkbox" aria-label={`选择事件 ${event.event_id}`} checked={selectedIds.has(event.id)} onChange={() => toggleSelected(event.id)} /></td><td><button className="event-title-button" onClick={() => onEvent(event)}>{event.title || event.event_id}</button><span className="table-secondary mono">{event.event_id}</span></td><td><span className="event-type-tag">{eventTypeName(event.event_type)}</span></td><td className="date-cell">{formatDate(event.occurred_at)}</td><EventOwnersCell value={event.security_owners} /><EventOwnersCell value={event.incident_owners} /><td><StageBadge event={event} /></td><td>{event.stage === 'red_lines' ? event.redline_confirmation_asset_id ? <span className="confirmation-status has"><FileImage size={13} />已上传</span> : <span className="confirmation-status">未上传</span> : <span className="table-secondary">不适用</span>}</td><td className="date-cell">{formatDate(event.created_at)}</td><td><div className="event-row-actions"><button className="text-button" onClick={() => onEvent(event)}>详情</button><button className="text-button" onClick={() => onEvent(event, 'edit')}>编辑</button><button className="text-button delete-event-button" disabled={deleting} onClick={() => deleteEvent(event)}>删除</button></div></td></tr>)}</tbody></table></div>}
       {data?.total > 0 && !loading && <div className="pagination"><span>每页 {pageSize} 条 · 共 {n(data.total)} 条</span><div><button className="icon-button" disabled={page <= 1} aria-label="上一页" onClick={() => setPage(page - 1)}><ChevronLeft size={17} /></button><span>{page} / {pages}</span><button className="icon-button" disabled={page >= pages} aria-label="下一页" onClick={() => setPage(page + 1)}><ChevronRight size={17} /></button></div></div>}
     </section>
-    <div className="info-note"><Info size={15} /><p>周期统计按发现时间计算。事件通过表单或文本接口提交，证据附件需手动上传；敏感文件可在平台删除。删除平台文件不会自动清理已生成的服务器备份。</p></div>
   </>;
 }
 
@@ -403,13 +398,13 @@ function Model({ revision, onChange, notify }) {
     } catch { notify('浏览器未允许复制，请选中密钥后手动复制。', 'error'); }
   }
   return <>
-    <PageHeading eyebrow="OPERATIONS CONFIGURATION" title="运营配置" description="配置本地统计漏斗和文本事件上报接口。"/>
+    <PageHeading eyebrow="OPERATIONS CONFIGURATION" title="运营配置"/>
     {error ? <ErrorBlock error={error} retry={retry} /> : loading && !data ? <Spinner /> : data && <>
-      <section className="model-switch-panel"><div className="model-emblem"><GitBranch size={27} strokeWidth={1.5} /></div><div className="model-switch-copy"><div><h2>默认周期漏斗</h2><span className="subtle-tag">系统内置</span></div><p>10 类指标 × 5 个周期，自动创建 50 个系统层。</p><span>系统层不进入自定义漏斗列表，且不可修改或删除。</span></div><div className="switch-area"><span>{data.enabled ? '已开启' : '已关闭'}</span><button type="button" role="switch" aria-checked={data.enabled} aria-label="默认周期漏斗开关" className={`toggle ${data.enabled ? 'on' : ''}`} disabled={busy || loading} onClick={toggle}><span /></button></div></section>
+      <section className="model-switch-panel"><div className="model-emblem"><GitBranch size={27} strokeWidth={1.5} /></div><div className="model-switch-copy"><div><h2>默认周期漏斗</h2></div><p>10 类指标 · 5 个统计周期</p></div><div className="switch-area"><span>{data.enabled ? '已开启' : '已关闭'}</span><button type="button" role="switch" aria-checked={data.enabled} aria-label="默认周期漏斗开关" className={`toggle ${data.enabled ? 'on' : ''}`} disabled={busy || loading} onClick={toggle}><span /></button></div></section>
       <section className="panel integration-config-panel">
-        <div className="panel-heading"><div><div className="panel-title"><Radio size={18} /><h2>事件上报 API</h2><span className={`config-status ${reportingConfig?.enabled ? 'is-ready' : ''}`}>{reportingConfig?.enabled ? '已开启' : '已关闭'}</span></div><p>供可信系统或 AI 以统一格式单条提交事件；仅限文本，不接收文件。</p></div></div>
+        <div className="panel-heading"><div><div className="panel-title"><Radio size={18} /><h2>事件上报 API</h2><span className={`config-status ${reportingConfig?.enabled ? 'is-ready' : ''}`}>{reportingConfig?.enabled ? '已开启' : '已关闭'}</span></div><p>单条文本上报</p></div></div>
         {reportingError ? <div className="config-error">API 配置读取失败：{reportingError.message}</div> : <div className="integration-config-body">
-          <div className="reporting-toolbar"><div><strong>POST /api/v1/events</strong><span>已创建 {reportingConfig?.key_count || 0} 个独立密钥；每个密钥均可单独重生成或删除。</span></div><label className="reporting-toggle"><input type="checkbox" checked={Boolean(reportingConfig?.enabled)} disabled={reportingBusy || (!reportingConfig?.configured && !reportingConfig?.enabled)} onChange={event => updateReportingEnabled(event.target.checked)} /><span>启用接口</span></label></div>
+          <div className="reporting-toolbar"><div><strong>POST /api/v1/events</strong><span>已创建 {reportingConfig?.key_count || 0} 个独立密钥</span></div><label className="reporting-toggle"><input type="checkbox" checked={Boolean(reportingConfig?.enabled)} disabled={reportingBusy || (!reportingConfig?.configured && !reportingConfig?.enabled)} onChange={event => updateReportingEnabled(event.target.checked)} /><span>启用接口</span></label></div>
           <form className="reporting-create-form" onSubmit={createReportingKey}><label><span>新 API 名称</span><input value={reportingKeyForm.name} onChange={event => setReportingKeyForm(previous => ({ ...previous, name: event.target.value }))} placeholder="例如：生产告警接入" type="text" maxLength={80} required /></label><label><span>标签（逗号分隔，可选）</span><input value={reportingKeyForm.tags} onChange={event => setReportingKeyForm(previous => ({ ...previous, tags: event.target.value }))} placeholder="生产、EDR、值班系统" /></label><Button variant="secondary" disabled={reportingBusy}>{reportingBusy ? '处理中…' : '生成 API 密钥'}</Button></form>
           {reportingKeysError ? <div className="config-error">密钥列表读取失败：{reportingKeysError.message}</div> : <div className="reporting-table-wrap">
             <div className="reporting-key-header"><span>名称</span><span>标签</span><span>密钥</span><span>最近使用</span><span>操作</span></div>
@@ -419,7 +414,7 @@ function Model({ revision, onChange, notify }) {
             })}</div>
           </div>}
           <div className="reporting-actions"><a className="button button-secondary" href="/api/reporting/skill" download="SKILL.md">下载 AI 调用说明（SKILL.md）</a></div>
-          <p className="integration-config-note">密钥使用独立加密文件保护，管理接口只会在点击某行“复制”时返回对应密钥，不会在列表展示明文。更改名称或标签不会更改密钥。删除或重生成会立即使对应旧密钥失效。接口固定单条上报，不接受附件、日志字段或额外字段。格式见 <a href="/api/reporting/skill" download="SKILL.md">SKILL.md</a>。</p>
+          <p className="integration-config-note">删除或重生成后，旧密钥立即失效。请求格式见 <a href="/api/reporting/skill" download="SKILL.md">SKILL.md</a>。</p>
         </div>}
       </section>
 
@@ -436,7 +431,7 @@ function Modal({ title, subtitle, children, onClose, wide = false }) {
     element.addEventListener('cancel', cancel, true);
     return () => { element.removeEventListener('cancel', cancel, true); element.close(); };
   }, []);
-  return <dialog ref={dialog} className={`modal ${wide ? 'modal-wide' : ''}`}><div className="modal-header"><div><h2>{title}</h2><p>{subtitle}</p></div><button type="button" className="icon-button" onClick={onClose} aria-label="关闭弹窗"><X size={20} /></button></div>{children}</dialog>;
+  return <dialog ref={dialog} className={`modal ${wide ? 'modal-wide' : ''}`}><div className="modal-header"><div><h2>{title}</h2>{subtitle && <p>{subtitle}</p>}</div><button type="button" className="icon-button" onClick={onClose} aria-label="关闭弹窗"><X size={20} /></button></div>{children}</dialog>;
 }
 
 function localDateTimeValue(value = new Date().toISOString()) {

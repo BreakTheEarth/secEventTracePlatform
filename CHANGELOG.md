@@ -11,4 +11,6 @@ Initial public beta.
 - Inbound text reporting API with independent keys and idempotency.
 - Default security owner `admin`, accepted by UI, imports and server validation.
 - No outbound analytics integration, external log retrieval, OCR or vendor credentials.
+- Simplified page copy and a Chinese getting-started README with synthetic demo screenshots.
+- Versioned ZIP source releases, GitHub publishing script and Star History chart.
 - Clean source packaging, release checks and Node.js CI.

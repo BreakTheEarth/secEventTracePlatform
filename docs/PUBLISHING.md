@@ -1,70 +1,86 @@
 # 发布到 GitHub
 
-本仓库使用独立源码和全新 Git 历史。公开仓库及 Release 只接收源码，不接收本地体验或实际运营数据。
+目标仓库：<https://github.com/BreakTheEarth/secEventTracePlatform>。
 
-## 1. 本地验证
+- 仓库 `main` 分支保存源码、测试、文档和演示截图。
+- 根目录 `README.md` 自动作为仓库首页介绍，底部显示 Star History 趋势图。
+- Releases 保存带版本号的 ZIP 源码包与 SHA-256 校验文件，版本标记为 Pre-release。
+- 数据库、业务附件、`.env`、依赖和运行日志不上传。
 
-在项目根目录执行：
+## 1. 登录有权限的账号
+
+需要 Git、Node.js 22.13 或以上、npm 和 GitHub CLI（`gh`）。在终端执行：
+
+```bash
+gh auth login --hostname github.com --git-protocol https --web
+```
+
+在浏览器中使用仓库所有者或有写入权限的协作者账号授权。密码和验证码只在 GitHub 页面填写。
+
+检查账号及权限：
+
+```bash
+gh auth status
+gh api repos/BreakTheEarth/secEventTracePlatform --jq '.permissions.push'
+```
+
+最后一条应返回 `true`。账号与仓库所有者名称不同也可以发布，前提是被授予写入权限。
+
+## 2. 准备源码与远程地址
+
+在项目目录执行：
 
 ```bash
 npm ci
 npm test
 npm run build
 npm run check:release
+git status --short
+git remote -v
+```
+
+公开前人工核对修改范围，提交需要发布的源码。不要使用 `git add -f` 将忽略文件加入仓库。
+
+`origin` 应为 `https://github.com/BreakTheEarth/secEventTracePlatform.git`。本地已经有该地址时不必再次添加。
+
+若从零准备本地仓库，而 GitHub 已有 README，优先先克隆远程仓库，再复制公开源码进去提交；不要强制推送覆盖远程历史。当前准备好的 Beta 已合并远程初始 README 的历史。
+
+## 3. 执行发布脚本
+
+确认源码已经提交且当前为 `main` 分支后，执行：
+
+```bash
+bash scripts/publish-beta.sh
+```
+
+脚本依次检查账号权限、分支、提交状态和远程历史，运行测试与构建，生成 ZIP，再推送源码和版本标签，创建 Beta Release 并上传 ZIP 与校验文件。
+
+脚本不会强制推送、移动已有版本标签或覆盖已发布的 Release。若远程有尚未合并的更新，会先停止并提示合并。
+
+生成的附件：
+
+```text
+release/trace-security-operations-beta-0.1.0-beta.1.zip
+release/trace-security-operations-beta-0.1.0-beta.1.zip.sha256
+```
+
+上传源码后，GitHub Actions 会在 Node.js 22 和 24 上执行测试与构建。脚本创建 Release 不代表远程 CI 已通过，需要在仓库 Actions 页确认。
+
+## 4. 只生成 ZIP 或手动创建 Release
+
+只打包、不推送：
+
+```bash
+npm run build
 npm run package:source
 ```
 
-`check:release` 检查源码白名单、公开版本、配置模板、构建文件、公司标识及部分常见凭据格式，并核对 Git 跟踪文件范围。它不能代替提交前人工检查。
+ZIP 与程序源码使用同一份白名单，包含文档及演示截图，不含本地运行数据或 `dist/`。接收者解压后运行 `npm ci`、`npm run build`、`npm start`。
 
-## 2. 检查提交范围
+也可在 GitHub 仓库打开 **Releases → Draft a new release**，选择已推送的 `v0.1.0-beta.1` 标签，填写标题 `Trace v0.1.0-beta.1`，复制 `docs/RELEASE-NOTES.md` 的内容，上传 ZIP 与 `.zip.sha256`，勾选 **Set as a pre-release** 后发布。
 
-```bash
-git status --short
-git ls-files
-```
+## 5. 发布后检查
 
-允许提交源代码、测试、文档、依赖锁文件和 CI 配置。`.env.example` 是无凭据模板，可以提交。
+打开仓库首页，确认源码目录、README 中的 3 张截图和底部 Star History 图。Star History 是第三方服务生成的趋势图，数据展示可能有延迟。
 
-`data/`、`.env`、`node_modules/`、`dist/`、`output/`、`release/`、数据库、私钥和运行日志均已忽略。不要使用 `git add -f` 绕过这些规则。
-
-如果仓库已经有初始提交，直接使用现有 `main` 分支。尚未初始化时：
-
-```bash
-git init -b main
-git add .
-git commit -m "feat: add standalone security operations beta"
-```
-
-提交者身份由发布者自行设置；公开前检查 `git log --format=fuller`，不要使用包含内部信息的作者邮箱。
-
-## 3. 建立公开仓库
-
-安装并登录 GitHub CLI 后，把 `YOUR_ACCOUNT` 替换为自己有权发布的账号或组织：
-
-```bash
-gh auth status
-gh repo create YOUR_ACCOUNT/trace-security-operations-beta \
-  --public \
-  --source=. \
-  --remote=origin \
-  --push \
-  --description "Self-hosted security event and campaign management"
-```
-
-如果目标仓库已存在，先核对远程地址后再添加 `origin`、推送 `main`，不要强制覆盖远程历史。推送后查看 GitHub Actions 的 Node.js 22/24 测试结果。
-
-## 4. 发布 Beta Release
-
-```bash
-git tag v0.1.0-beta.1
-git push origin v0.1.0-beta.1
-gh release create v0.1.0-beta.1 \
-  release/trace-security-operations-beta-0.1.0-beta.1.tar.gz \
-  release/trace-security-operations-beta-0.1.0-beta.1.tar.gz.sha256 \
-  --verify-tag \
-  --prerelease \
-  --title "v0.1.0-beta.1" \
-  --notes-file CHANGELOG.md
-```
-
-接收者解压源码后执行 `npm ci`、`npm run build`、`npm start`。源码包不含预构建依赖、业务数据或管理员配置。该包面向本 Beta 的独立部署。
+打开 Releases，确认版本为 `v0.1.0-beta.1`，并且附件包含项目 ZIP 和 SHA-256 文件。GitHub 还会自动提供 `Source code (zip/tar.gz)`，这是平台生成的源码快照，与手动上传的版本 ZIP 可以同时存在。

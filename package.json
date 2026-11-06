@@ -27,5 +27,5 @@
     "vite": "^8.3.4"
   },
   "license": "MIT",
-  "description": "Self-hosted security event and campaign management, open-source beta"
+  "description": "Self-hosted security operations worklog for daily events and remediation campaigns"
 }

@@ -34,10 +34,22 @@ export async function checkRelease({ includeBuild = true } = {}) {
     'github_pat_[A-Za-z0-9_]{40,}',
   ].join('|'), 'i');
   const inspect = async path => {
-    const text = await readFile(join(root, path), 'utf8');
-    if (forbiddenText.test(text)) throw new Error(`Internal identifier, removed integration or private key material in ${path}`);
+    if (forbiddenText.test(path)) throw new Error(`Internal identifier in source path: ${path}`);
     if (path !== '.env.example' && /(?:^|\/)(?:data|output|release|node_modules|autologin)(?:\/|$)|\.sqlite(?:-|$)|\.key$|\.pem$/.test(path)) {
       throw new Error(`Private/runtime path in source list: ${path}`);
+    }
+    const bytes = await readFile(join(root, path));
+    if (/^docs\/images\/[a-z0-9-]+\.png$/.test(path)) {
+      const pngHeader = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+      if (!bytes.subarray(0, 8).equals(pngHeader) || bytes.length > 5 * 1024 * 1024) {
+        throw new Error(`Documentation image must be a PNG under 5 MiB: ${path}`);
+      }
+      // Screenshots are reviewed visually before publication; scan any embedded text too.
+    } else if (bytes.includes(0)) {
+      throw new Error(`Unexpected binary file in source list: ${path}`);
+    }
+    if (forbiddenText.test(bytes.toString('utf8'))) {
+      throw new Error(`Internal identifier, removed integration or private key material in ${path}`);
     }
   };
   for (const path of files) await inspect(path);
