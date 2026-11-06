@@ -6,6 +6,7 @@ Initial public beta.
 
 - Manual security events, XLSX batch creation, red-line evidence and local analytics.
 - Campaigns, independent tasks, date ranges, optional task deadlines, tags and event relationships.
+- One task creation entry below the table; task reopening without a remarks form.
 - Private evidence downloads and campaign operation history.
 - Inbound text reporting API with independent keys and idempotency.
 - Default security owner `admin`, accepted by UI, imports and server validation.
