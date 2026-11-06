@@ -12,7 +12,7 @@
 需要 Git、Node.js 22.13 或以上、npm 和 GitHub CLI（`gh`）。在终端执行：
 
 ```bash
-gh auth login --hostname github.com --git-protocol https --web
+gh auth login --hostname github.com --git-protocol https --web --scopes repo,workflow
 ```
 
 在浏览器中使用仓库所有者或有写入权限的协作者账号授权。密码和验证码只在 GitHub 页面填写。

@@ -9,11 +9,11 @@ archive="release/trace-security-operations-beta-${version}.zip"
 
 command -v gh >/dev/null || { echo "请先安装 GitHub CLI（gh）。"; exit 1; }
 gh auth status --hostname github.com >/dev/null 2>&1 || {
-  echo "请先执行 gh auth login --hostname github.com --git-protocol https --web"; exit 1;
+  echo "请先执行 gh auth login --hostname github.com --git-protocol https --web --scopes repo,workflow"; exit 1;
 }
 if [[ "$(gh api "repos/${repo}" --jq '.permissions.push')" != "true" ]]; then
   echo "当前 GitHub 账号没有 ${repo} 的写入权限。"
-  echo "请使用 gh auth login --hostname github.com --git-protocol https --web 登录仓库所有者或协作者账号。"
+  echo "请使用 gh auth login --hostname github.com --git-protocol https --web --scopes repo,workflow 登录仓库所有者或协作者账号。"
   exit 1
 fi
 [[ "$(git branch --show-current)" == "main" ]] || { echo "请切换到 main 分支。"; exit 1; }
